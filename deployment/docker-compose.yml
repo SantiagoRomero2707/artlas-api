@@ -1,0 +1,55 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql_container_test
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: prueba_jaime_torres
+    ports:
+      - '3307:3306'
+    networks:
+      - mi-red-local
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  integration-tests:
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /app
+    volumes:
+      - .:/app
+    networks:
+      - mi-red-local
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/prueba_jaime_torres?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=America/Bogota
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_PROFILES_ACTIVE=test
+    command: ["mvn", "test"]
+
+  backend-java:
+    build: .
+    ports:
+      - '8080:8080'
+    networks:
+      - mi-red-local
+    depends_on:
+      db:
+        condition: service_healthy
+      integration-tests:
+        condition: service_completed_successfully
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/prueba_jaime_torres?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=America/Bogota
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345
+      - SPRING_JPA_SHOW_SQL=true
+
+networks:
+  mi-red-local:
+    driver: bridge

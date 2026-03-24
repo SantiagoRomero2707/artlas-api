@@ -1,0 +1,23 @@
+name: CD - Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/build-and-test.yml@main
+    with:
+      java-version: '17'
+      skip-tests: true
+
+  deploy:
+    needs: build
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@main
+    with:
+      java-version: '17'
+      artifact-name: ${{ needs.build.outputs.artifact-name }}
+      environment: production
+    secrets:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

@@ -1,0 +1,12 @@
+name: CI - Test
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/build-and-test.yml@main
+    with:
+      java-version: '17'

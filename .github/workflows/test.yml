@@ -7,6 +7,6 @@ on:
 
 jobs:
   build-and-test:
-    uses: SantiagoRomero2707/shared-workflows/.github/workflows/java/build.yml@master
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/build.yml@master
     with:
       java-version: '17'

@@ -50,6 +50,7 @@ public class ArtistServiceImpl implements ArtistService {
             artistEntityRepository.deleteById(id);
         }catch (Exception e){
             //TODO
+            System.out.println("Hello world");
         }
     }
 }

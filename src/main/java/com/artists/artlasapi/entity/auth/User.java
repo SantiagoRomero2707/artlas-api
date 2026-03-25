@@ -20,7 +20,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "user",schema = "user")
+@Table(name = "user", schema = "authentication")
 public class User implements UserDetails {
 
 

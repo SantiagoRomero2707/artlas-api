@@ -1,3 +1,12 @@
 spring:
   application:
     name: artlas-api
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true

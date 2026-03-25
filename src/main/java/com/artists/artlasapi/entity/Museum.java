@@ -47,6 +47,7 @@ public class Museum {
             inverseJoinColumns = @JoinColumn(name = "id_obra")
     )
 
+    @Builder.Default
     private List<ArtWorks> employees = new ArrayList<>();
 
     @Override

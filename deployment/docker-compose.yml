@@ -1,17 +1,18 @@
 services:
   db:
-    image: mysql:8.0
-    container_name: mysql_container_test
+    image: postgres:16
+    container_name: postgres_container
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 12345
-      MYSQL_DATABASE: prueba_jaime_torres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: prueba_jaime_torres
+      POSTGRES_USER: postgres
     ports:
-      - '3307:3306'
+      - '5432:5432'
     networks:
       - mi-red-local
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "prueba_jaime_torres"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -27,8 +28,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/prueba_jaime_torres?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=America/Bogota
-      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/prueba_jaime_torres
+      - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=12345
       - SPRING_PROFILES_ACTIVE=test
     command: ["mvn", "test"]
@@ -45,8 +46,8 @@ services:
       integration-tests:
         condition: service_completed_successfully
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/prueba_jaime_torres?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=America/Bogota
-      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/prueba_jaime_torres
+      - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=12345
       - SPRING_JPA_SHOW_SQL=true
 

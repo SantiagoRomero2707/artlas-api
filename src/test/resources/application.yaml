@@ -2,7 +2,7 @@ spring:
   application:
     name: artlas-api
   datasource:
-    driverClassName: com.mysql.cj.jdbc.Driver
+    driverClassName: org.postgresql.Driver
   jpa:
     show-sql: true
     hibernate:
@@ -10,3 +10,4 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        hbm2ddl.create_namespaces: true

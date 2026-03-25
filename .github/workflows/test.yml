@@ -13,8 +13,7 @@ jobs:
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/build.yml@master
     with:
       java-version: '17'
-      mysql-database: artlas_test
-      mysql-user: artlas_user
+      postgres-database: artlas_test
+      postgres-user: artlas_user
     secrets:
-      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}

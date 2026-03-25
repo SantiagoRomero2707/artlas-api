@@ -12,18 +12,16 @@ import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabas
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
 import org.springframework.test.annotation.Rollback;
 
-
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @Slf4j
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ArtistRepositoryTest {
+public class ArtistRepositoryIT {
 
     @Autowired
     private ArtistRepository artistEntityRepository;

@@ -1,4 +1,4 @@
-name: Build and Tests
+name: CI/CD Pipeline
 
 on:
   push:
@@ -23,3 +23,12 @@ jobs:
       postgres-user: artlas_user
     secrets:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@master
+    with:
+      environment: production
+    secrets:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

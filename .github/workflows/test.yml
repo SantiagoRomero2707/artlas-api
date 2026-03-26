@@ -1,4 +1,4 @@
-name: Tests
+name: Build and Tests
 
 on:
   push:
@@ -9,8 +9,14 @@ on:
       - master
 
 jobs:
-  test:
+  build:
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/build.yml@master
+    with:
+      java-version: '17'
+
+  test:
+    needs: build
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/test.yml@master
     with:
       java-version: '17'
       postgres-database: artlas_test

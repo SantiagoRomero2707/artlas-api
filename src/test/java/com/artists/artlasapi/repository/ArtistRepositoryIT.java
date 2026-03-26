@@ -88,7 +88,7 @@ public class ArtistRepositoryIT {
         for(Artist artistEntity: allArtist){
             System.out.println(artistEntity);
         }
-        assertTrue(allArtist.size() > 0);
+        assertFalse(allArtist.isEmpty());
     }
 
     @Test

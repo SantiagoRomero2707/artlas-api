@@ -1,12 +1,16 @@
 package com.artists.artlasapi.repository;
 
 import com.artists.artlasapi.entity.Artist;
-import com.artists.artlasapi.utils.ArtistTestUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,59 +18,87 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ArtistRepositoryIT {
 
     @Autowired
     private ArtistRepository artistEntityRepository;
 
+    private static Integer idArtist;
+
     @Test
-    public void testSaveArtist() {
-        Artist saved = artistEntityRepository.save(ArtistTestUtils.buildArtist());
-        assertNotNull(saved);
-        assertTrue(saved.getIdArtists() > 0);
+    @Rollback(value = false)
+    @Order(1)
+    public void testSaveArtist(){
+        Artist artistEntity = new Artist.ArtistBuilder()
+                .setName("Johan Santiago")
+                .setLastName("Romero Duarte")
+                .setTypeIDE("AB-CD")
+                .setNumberIDE("EF-GH")
+                .build();
+
+        Artist artistSaved = artistEntityRepository.save(artistEntity);
+        idArtist = artistSaved.getIdArtists();
+        assertNotNull(artistSaved);
     }
 
     @Test
-    public void testFindById() {
-        Artist saved = artistEntityRepository.save(ArtistTestUtils.buildArtist());
-
-        Optional<Artist> found = artistEntityRepository.findById(saved.getIdArtists());
-
-        assertTrue(found.isPresent());
-        assertEquals(saved.getIdArtists(), found.get().getIdArtists());
+    @Order(2)
+    public void testFindById(){
+        Optional<Artist> artistEntity = artistEntityRepository.findById(idArtist);
+        assertTrue(artistEntity.isPresent());
+        assertEquals(idArtist, artistEntity.get().getIdArtists());
     }
 
     @Test
-    public void testUpdateArtist() {
+    @Rollback(value = false)
+    @Order(3)
+    public void testUpdateArtist(){
         String newLastName = "Sabogal Castro";
-        Artist saved = artistEntityRepository.save(ArtistTestUtils.buildArtist());
 
-        saved.setLastName(newLastName);
-        artistEntityRepository.save(saved);
+        Optional<Artist> existArtist = artistEntityRepository.findById(idArtist);
+        if(existArtist.isPresent()){
+            Artist artistEntity = new Artist.ArtistBuilder()
+                    .setIdArtists(idArtist)
+                    .setName(existArtist.get().getName())
+                    .setLastName(newLastName)
+                    .setTypeIDE(existArtist.get().getTypeIDE())
+                    .setNumberIDE(existArtist.get().getNumberIDE())
+                    .build();
 
-        Optional<Artist> updated = artistEntityRepository.findById(saved.getIdArtists());
-        assertTrue(updated.isPresent());
-        assertEquals(newLastName, updated.get().getLastName());
+            artistEntityRepository.save(artistEntity);
+        }
+
+        Optional<Artist> updateArtist = artistEntityRepository.findById(idArtist);
+        if(updateArtist.isEmpty()){
+            throw new RuntimeException("El artista no está creado en base de datos");
+        }
+        assertEquals(newLastName, updateArtist.get().getLastName());
     }
 
     @Test
-    public void testListArtist() {
-        artistEntityRepository.save(ArtistTestUtils.buildArtist());
+    @Order(4)
+    public void testListArtist(){
+        List<Artist> allArtist = artistEntityRepository.findAll();
 
-        List<Artist> allArtists = artistEntityRepository.findAll();
-
-        assertFalse(allArtists.isEmpty());
+        for(Artist artistEntity: allArtist){
+            System.out.println(artistEntity);
+        }
+        assertTrue(allArtist.size() > 0);
     }
 
     @Test
-    public void testDeleteArtist() {
-        Artist saved = artistEntityRepository.save(ArtistTestUtils.buildArtist());
-        int id = saved.getIdArtists();
+    @Rollback(value = false)
+    @Order(5)
+    public void testDeleteArtist(){
+        boolean isExistBeforeDelete = artistEntityRepository.findById(idArtist).isPresent();
+        artistEntityRepository.deleteById(idArtist);
 
-        artistEntityRepository.deleteById(id);
+        boolean notExistAfterDelete = artistEntityRepository.findById(idArtist).isPresent();
 
-        assertFalse(artistEntityRepository.findById(id).isPresent());
+        assertTrue(isExistBeforeDelete);
+        assertFalse(notExistAfterDelete);
     }
 }

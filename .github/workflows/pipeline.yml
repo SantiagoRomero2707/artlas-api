@@ -38,7 +38,5 @@ jobs:
     needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@master
-    with:
-      environment: production
     secrets:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

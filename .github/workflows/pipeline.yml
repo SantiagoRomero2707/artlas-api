@@ -38,5 +38,8 @@ jobs:
     needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@master
+    with:
+      railway-service: artlas-api
     secrets:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}

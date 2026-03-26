@@ -24,8 +24,18 @@ jobs:
     secrets:
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
 
-  deploy:
+  docker:
     needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    uses: SantiagoRomero2707/shared-workflows/.github/workflows/docker.yml@master
+    with:
+      image-name: santiago2707/artlas-api
+      dockerhub-username: santiago2707
+    secrets:
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  deploy:
+    needs: docker
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@master
     with:

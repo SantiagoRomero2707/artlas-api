@@ -1,14 +1,16 @@
 # Stage 1: Build
-FROM maven:3.9-eclipse-temurin-17 AS builder
+FROM maven:3.9-eclipse-temurin-17-alpine AS builder
 
 WORKDIR /app
 
-COPY . .
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-RUN mvn clean package -DskipTests
+COPY src ./src
+RUN mvn package -DskipTests -B
 
 # Stage 2: Runtime
-FROM amazoncorretto:17
+FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
 

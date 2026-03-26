@@ -39,7 +39,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     uses: SantiagoRomero2707/shared-workflows/.github/workflows/deploy.yml@master
     with:
-      image-tag: ${{ needs.docker.outputs.image-tag }}
       environment: production
     secrets:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

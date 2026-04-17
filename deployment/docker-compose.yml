@@ -17,31 +17,45 @@ services:
       timeout: 5s
       retries: 10
 
+  cache:
+    image: redis:7.4-alpine
+    container_name: redis-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 12345 --appendonly yes
+
   integration-tests:
     image: maven:3.9-eclipse-temurin-17
     working_dir: /app
     volumes:
-      - .:/app
+      - ..:/app
     networks:
       - mi-red-local
     depends_on:
       db:
+        condition: service_healthy
+      cache:
         condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/prueba_jaime_torres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=12345
       - SPRING_PROFILES_ACTIVE=test
-    command: ["mvn", "test"]
+    command: ["mvn", "verify", "-P", "integration-tests", "-Dsurefire.skip=true"]
 
   backend-java:
-    build: .
+    build:
+      context: ..
+      dockerfile: Dockerfile
     ports:
       - '8080:8080'
     networks:
       - mi-red-local
     depends_on:
       db:
+        condition: service_healthy
+      cache:
         condition: service_healthy
       integration-tests:
         condition: service_completed_successfully
